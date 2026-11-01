@@ -6,6 +6,8 @@
 * Description	: Header file for declearing data structures and functions for stacks, queues and brower navigation managemnt
 */
 
+#ifndef A2_H
+#define A2_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,10 +20,10 @@
 typedef struct StackNode {
 	char url[MAX_URL];
 	struct StackNode* next;
-} StackNodec;
+} StackNode;
 
 typedef struct Stack {
-	StackNodec* top;
+	StackNode* top;
 } Stack;
 
 typedef struct QueueNode {
@@ -59,3 +61,4 @@ void freeQueue(Queue* queue);
 // browser navigation functions
 void cleanNewline(char* str);
 
+#endif
