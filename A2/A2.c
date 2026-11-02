@@ -360,4 +360,117 @@ void cleanNewline(char* str)
 		}
 	}
 }
+int main(void)
+{
+	Stack* backStack = createStack();
+	Stack* forwardStack = createStack();
+	Queue* historyQueue = createQueue();
 
+	int choice = 0;
+	char buffer[BUFFER_SIZE] = "";
+	char inputUrl[MAX_URL] = "";
+
+	while (choice != 6)
+	{
+		printf("\n MENU\n");
+		printf("\n 1. Visit new Web Page ");
+		printf("\n 2. Navigate Backward");
+		printf("\n 3. Navigate Forward ");
+		printf("\n 4. Display Current Page ");
+		printf("\n 5. Display Browsing History ");
+		printf("\n 6. Exit \n");
+		printf("\n Please enter your choice: ");
+
+		if (fgets(buffer, sizeof(buffer), stdin) == NULL)
+		{
+			break;
+		}
+
+		sscanf_s(buffer, "%d", &choice);
+
+
+		switch (choice)
+		{
+		case 1:
+			printf("Enter the URL: ");
+			if (fgets(inputUrl, sizeof(inputUrl), stdin) != NULL)
+			{
+				cleanNewline(inputUrl);
+				if (strlen(inputUrl) > 0)
+				{
+					push(backStack, inputUrl);
+					enqueue(historyQueue, inputUrl);
+
+					while (!isEmptyStack(forwardStack))
+					{
+						char* forwardUrl = pop(forwardStack);
+						free(forwardUrl);
+					}
+				}
+				break;
+
+		case 2:
+			if (isEmptyStack(backStack) || backStack->top->next == NULL)
+			{
+				printf("No backward history available.\n");
+			}
+			else
+			{
+				char* currentUrl = pop(backStack);
+				push(forwardStack, currentUrl);
+				free(currentUrl);
+
+				char* activePage = peek(backStack);
+				printf("\n Current page: %s\n", activePage);
+				moveToRear(historyQueue, activePage);
+			}
+			break;
+
+		case 3:
+			if (isEmptyStack(forwardStack))
+			{
+				printf("No forward history available.\n");
+			}
+			else
+			{
+				char* nextPage = pop(forwardStack);
+				push(backStack, nextPage);
+
+				printf("Current page: %s\n", nextPage);
+				moveToRear(historyQueue, nextPage);
+
+
+				free(nextPage);
+			}
+			break;
+
+		case 4:
+			if (isEmptyStack(backStack))
+			{
+				printf("No page to display.\n");
+			}
+			else
+			{
+				char* currentPage = peek(backStack);
+				printf("Current page: %s\n", currentPage);
+			}
+			break;
+		case 5:
+			printHistory(historyQueue);
+			break;
+
+		case 6:
+			printf("Exiting the program\n");
+			break;
+
+		default:
+			printf("Invalid choice. Please choose a number from 1-6.\n");
+			break;
+			}
+		}
+	}
+	freeStack(backStack);
+	freeStack(forwardStack);
+	freeQueue(historyQueue);
+	return 0;
+}
